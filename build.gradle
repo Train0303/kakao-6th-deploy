@@ -25,6 +25,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
+
 	// kargo, ide
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
@@ -59,6 +60,7 @@ bootJar {
 		into 'src/main/resources/static/docs'    // /static/docs로 복사!
 	}
 }
+
 
 jar {
 	enabled = false

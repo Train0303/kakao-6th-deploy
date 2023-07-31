@@ -9,10 +9,15 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name="item_tb", indexes = {
-        @Index(name = "item_option_id_idx", columnList = "option_id"),
-        @Index(name = "item_order_id_idx", columnList = "order_id")
-})
+@Table(name="item_tb",
+        indexes = {
+            @Index(name = "item_option_id_idx", columnList = "option_id"),
+            @Index(name = "item_order_id_idx", columnList = "order_id")
+        },
+        uniqueConstraints = {
+            @UniqueConstraint(name = "uk_item_option_order", columnNames = {"option_id", "order_id"})
+        }
+)
 public class Item {
 
     @Id
@@ -28,7 +33,6 @@ public class Item {
     private int quantity;
     @Column(nullable = false)
     private int price;
-
 
     @Builder
     public Item(int id, Option option, Order order, int quantity, int price) {

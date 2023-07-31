@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DummyEntity {
     protected User newUser(String username, PasswordEncoder passwordEncoder){
@@ -136,5 +137,27 @@ public class DummyEntity {
                 newOption(productListPS.get(14), "화이트", 148000),
                 newOption(productListPS.get(14), "블랙", 148000)
         );
+    }
+
+    protected List<Cart> cartDummyList(List<Option> optionList, User user) {
+        return Arrays.asList(
+                newCart(user, optionList.get(0), 2),
+                newCart(user, optionList.get(1), 3),
+                newCart(user, optionList.get(15), 5),
+                newCart(user, optionList.get(16), 1)
+        );
+    }
+
+    protected List<Cart> cartDummyList2(List<Option> optionList, User user) {
+        return Arrays.asList(
+                newCart(user, optionList.get(2), 5),
+                newCart(user, optionList.get(3), 6)
+        );
+    }
+
+    protected List<Item> itemDummyList(List<Cart> cartList, Order order){
+        return cartList.stream()
+                .map((Cart c) -> newItem(c, order))
+                .collect(Collectors.toList());
     }
 }

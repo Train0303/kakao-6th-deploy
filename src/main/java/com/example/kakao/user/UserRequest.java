@@ -14,7 +14,7 @@ public class UserRequest {
     public static class JoinDTO {
 
         @NotEmpty
-        @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식으로 작성해주세요")
+        @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식으로 작성해야 합니다.")
         private String email;
 
         @NotEmpty
@@ -40,7 +40,7 @@ public class UserRequest {
     @Setter
     public static class LoginDTO {
         @NotEmpty
-        @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식으로 작성해주세요")
+        @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식으로 작성해야 합니다.")
         private String email;
 
         @NotEmpty
@@ -53,7 +53,7 @@ public class UserRequest {
     @Setter
     public static class EmailCheckDTO {
         @NotEmpty
-        @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식으로 작성해주세요")
+        @Pattern(regexp = "^[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$", message = "이메일 형식으로 작성해야 합니다.")
         private String email;
     }
 
