@@ -409,7 +409,7 @@ public class UserRestControllerTest extends MyRestDoc {
         UserRequest.LoginDTO userRequest = new UserRequest.LoginDTO();
         String email = "ssarmango@nate.com";
         userRequest.setEmail(email);
-        userRequest.setPassword("meta");
+        userRequest.setPassword("meta1!");
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
