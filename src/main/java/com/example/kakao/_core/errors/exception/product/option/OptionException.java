@@ -1,5 +1,6 @@
 package com.example.kakao._core.errors.exception.product.option;
 
+import com.example.kakao._core.errors.exception.Exception400;
 import com.example.kakao._core.errors.exception.Exception401;
 import com.example.kakao._core.errors.exception.Exception404;
 
@@ -7,7 +8,7 @@ import java.util.List;
 
 public class OptionException {
 
-    public static class DuplicatedOptionException extends Exception401 {
+    public static class DuplicatedOptionException extends Exception400 {
         public DuplicatedOptionException() {
             super("중복된 옵션이 입력되었습니다.");
         }
