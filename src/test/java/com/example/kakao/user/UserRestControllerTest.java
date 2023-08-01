@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+@DisplayName("유저_통합_테스트")
 @ActiveProfiles("test")
 @AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080)
 @Sql(value = "classpath:db/teardown.sql")
@@ -50,22 +51,22 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("true"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue()));
 
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_회원가입_테스트_실패_이미_존재하는_이메일")
@@ -79,23 +80,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("동일한 이메일이 존재합니다 : " + "ssarmango@nate.com"),
                 jsonPath("$.error.status").value(400)
                 );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_회원가입_테스트_실패_이메일_형식_미충족")
@@ -109,23 +110,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("이메일 형식으로 작성해야 합니다.:email"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_회원가입_테스트_실패_너무_짧은_유저이름")
@@ -139,23 +140,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("8에서 45자 이내여야 합니다.:username"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_회원가입_테스트_실패_너무_긴_유저이름")
@@ -169,23 +170,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("8에서 45자 이내여야 합니다.:username"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_회원가입_테스트_실패_너무_짧은_비밀번호")
@@ -199,23 +200,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("8에서 20자 이내여야 합니다.:password"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_회원가입_테스트_실패_너무_긴_비밀번호")
@@ -229,23 +230,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("8에서 20자 이내여야 합니다.:password"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_회원가입_테스트_실패_비밀번호_형식_미충족")
@@ -259,23 +260,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/join")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println(response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("영문, 숫자, 특수문자가 포함되어야하고 공백이 포함될 수 없습니다.:password"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     /**
@@ -292,24 +293,24 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
-        String header = result.andReturn().getResponse().getHeader("Authorization");
+        String response = resultActions.andReturn().getResponse().getContentAsString();
+        String header = resultActions.andReturn().getResponse().getHeader("Authorization");
         System.out.println("테스트 : " + response);
 
         // then
         assertTrue(header.startsWith("Bearer "));
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("true"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue())
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_로그인_테스트_실패_없는_회원")
@@ -323,23 +324,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("이메일을 찾을 수 없습니다 : " + email),
                 jsonPath("$.error.status").value(404)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_로그인_테스트_실패_틀린_비밀번호")
@@ -353,23 +354,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("비밀번호가 일치하지 않습니다."),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_로그인_테스트_실패_이메일_형식_미충족")
@@ -383,23 +384,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("이메일 형식으로 작성해야 합니다.:email"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_로그인_테스트_실패_너무_짧은_비밀번호")
@@ -413,23 +414,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("8에서 20자 이내여야 합니다.:password"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_로그인_테스트_실패_너무_긴_비밀번호")
@@ -443,23 +444,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("8에서 20자 이내여야 합니다.:password"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("유저_로그인_테스트_실패_비밀번호_형식_미충족")
@@ -473,23 +474,23 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(userRequest);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/login")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String response = result.andReturn().getResponse().getContentAsString();
+        String response = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + response);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error.message").value("영문, 숫자, 특수문자가 포함되어야하고 공백이 포함될 수 없습니다.:password"),
                 jsonPath("$.error.status").value(400)
         );
-        result.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document);
     }
 
     /**
@@ -506,17 +507,17 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(emailCheckDTO);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/check")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String responseBody = result.andReturn().getResponse().getContentAsString();
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("true"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue())
@@ -533,17 +534,17 @@ public class UserRestControllerTest extends MyRestDoc {
         String requestBody = om.writeValueAsString(emailCheckDTO);
 
         // when
-        ResultActions result = mvc.perform(
+        ResultActions resultActions = mvc.perform(
                 post("/check")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // eye
-        String responseBody = result.andReturn().getResponse().getContentAsString();
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트 : " + responseBody);
 
         // then
-        result.andExpectAll(
+        resultActions.andExpectAll(
                 jsonPath("$.success").value("true"),
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue())
