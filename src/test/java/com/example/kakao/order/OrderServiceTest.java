@@ -127,7 +127,7 @@ public class OrderServiceTest {
 
         // mocking
         given(cartJPARepository.findAllByUserIdFetchJoin(anyInt())).willReturn(cartList);
-        willThrow(new RuntimeException("db error")).given(cartJPARepository).deleteAllInBatch(cartList);
+        willThrow(new RuntimeException("db error")).given(cartJPARepository).deleteAllIn(List.of(1, 2));
 
         // when & then
         assertThatThrownBy(() -> orderService.create(user)).isInstanceOf(CartException.CartDeleteException.class);

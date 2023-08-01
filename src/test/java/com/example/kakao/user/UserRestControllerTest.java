@@ -522,13 +522,14 @@ public class UserRestControllerTest extends MyRestDoc {
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue())
         );
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("이메일_검사_테스트_실패_이미_존재하는_이메일")
     @Test
     public void same_email_test_fail_already_exist_email() throws Exception {
         // given
-        String email = "rjsdnxogh12@naver.com";
+        String email = "ssarmango@nate.com";
         UserRequest.EmailCheckDTO emailCheckDTO = new UserRequest.EmailCheckDTO();
         emailCheckDTO.setEmail(email);
         String requestBody = om.writeValueAsString(emailCheckDTO);
@@ -545,9 +546,40 @@ public class UserRestControllerTest extends MyRestDoc {
 
         // then
         resultActions.andExpectAll(
-                jsonPath("$.success").value("true"),
+                jsonPath("$.success").value("false"),
                 jsonPath("$.response").value(nullValue()),
-                jsonPath("$.error").value(nullValue())
+                jsonPath("$.error.message").value("동일한 이메일이 존재합니다 : " + email),
+                jsonPath("$.error.status").value(400)
         );
+        resultActions.andDo(print()).andDo(document);
+    }
+
+    @DisplayName("이메일_검사_테스트_실패_이메일_형식_미충족")
+    @Test
+    public void same_email_test_fail_not_satisfied_password_expression() throws Exception {
+        // given
+        String email = "ssarmangonate.com";
+        UserRequest.EmailCheckDTO emailCheckDTO = new UserRequest.EmailCheckDTO();
+        emailCheckDTO.setEmail(email);
+        String requestBody = om.writeValueAsString(emailCheckDTO);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/check")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // eye
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // then
+        resultActions.andExpectAll(
+                jsonPath("$.success").value("false"),
+                jsonPath("$.response").value(nullValue()),
+                jsonPath("$.error.message").value("이메일 형식으로 작성해야 합니다.:email"),
+                jsonPath("$.error.status").value(400)
+        );
+        resultActions.andDo(print()).andDo(document);
     }
 }

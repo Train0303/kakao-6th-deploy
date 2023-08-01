@@ -1,6 +1,10 @@
 package com.example.kakao.order;
 
 import com.example.kakao.MyRestDoc;
+import com.example.kakao._core.errors.exception.user.UserException;
+import com.example.kakao._core.security.JWTProvider;
+import com.example.kakao.user.User;
+import com.example.kakao.user.UserJPARepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @DisplayName("주문_통합_테스트")
@@ -24,13 +29,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
-public class OrderRestContollerTest extends MyRestDoc {
+public class OrderRestControllerTest extends MyRestDoc {
 
     private final ObjectMapper om;
 
+    private final UserJPARepository userJPARepository;
+
     @Autowired
-    public OrderRestContollerTest(ObjectMapper om) {
+    public OrderRestControllerTest(ObjectMapper om, UserJPARepository userJPARepository) {
         this.om = om;
+        this.userJPARepository = userJPARepository;
     }
 
     /**
@@ -48,11 +56,12 @@ public class OrderRestContollerTest extends MyRestDoc {
     @Test
     public void order_save_test() throws Exception {
         // given
-
+        String token = getJwtToken("ssarmango@nate.com");
 
         // when
         ResultActions resultActions = mvc.perform(
-                post("/orders/save"));
+                post("/orders/save")
+                        .header(JWTProvider.HEADER, token));
 
         // eye
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
@@ -79,6 +88,7 @@ public class OrderRestContollerTest extends MyRestDoc {
                 jsonPath("$.response.totalPrice").value(310900),
                 jsonPath("$.error").value(nullValue())
         );
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("주문_저장_테스트_실패_빈_장바구니")
@@ -86,10 +96,12 @@ public class OrderRestContollerTest extends MyRestDoc {
     @Test
     public void order_save_test_fail_empty_cart() throws Exception {
         // given
+        String token = getJwtToken("rjsdnxogh@naver.com");
 
         // when
         ResultActions resultActions = mvc.perform(
-                post("/orders/save"));
+                post("/orders/save")
+                        .header(JWTProvider.HEADER, token));
 
         // eye
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
@@ -102,6 +114,7 @@ public class OrderRestContollerTest extends MyRestDoc {
                 jsonPath("$.error.message").value("회원님의 장바구니가 비어있습니다."),
                 jsonPath("$.error.status").value(404)
         );
+        resultActions.andDo(print()).andDo(document);
     }
 
     /**
@@ -113,12 +126,13 @@ public class OrderRestContollerTest extends MyRestDoc {
     @Test
     public void order_findById_test() throws Exception{
         // given
+        String token = getJwtToken("ssarmango@nate.com");
         int findId = 1;
 
         // when
         ResultActions resultActions = mvc.perform(
                 get("/orders/"+findId)
-        );
+                        .header(JWTProvider.HEADER, token));
 
         // eye
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
@@ -145,6 +159,7 @@ public class OrderRestContollerTest extends MyRestDoc {
                 jsonPath("$.response.totalPrice").value(310900),
                 jsonPath("$.error").value(nullValue())
         );
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("장바구니_조회_테스트_실패_없는_주문")
@@ -152,12 +167,13 @@ public class OrderRestContollerTest extends MyRestDoc {
     @Test
     public void order_findById_test_fail_order_not_found() throws Exception{
         // given
+        String token = getJwtToken("ssarmango@nate.com");
         int findId = 3;
 
         // when
         ResultActions resultActions = mvc.perform(
                 get("/orders/"+findId)
-        );
+                        .header(JWTProvider.HEADER, token));
 
         // eye
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
@@ -170,6 +186,7 @@ public class OrderRestContollerTest extends MyRestDoc {
                 jsonPath("$.error.message").value("해당하는 주문을 찾을 수 없습니다. : " + findId),
                 jsonPath("$.error.status").value(404)
         );
+        resultActions.andDo(print()).andDo(document);
     }
 
     @DisplayName("장바구니_조회_테스트_권한없는_유저의_주문_접근")
@@ -177,12 +194,13 @@ public class OrderRestContollerTest extends MyRestDoc {
     @Test
     public void order_findById_test_fail_forbidden_user_access() throws Exception{
         // given
+        String token = getJwtToken("rjsdnxogh@naver.com");
         int findId = 1;
 
         // when
         ResultActions resultActions = mvc.perform(
                 get("/orders/"+findId)
-        );
+                        .header(JWTProvider.HEADER, token));
 
         // eye
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
@@ -202,12 +220,13 @@ public class OrderRestContollerTest extends MyRestDoc {
     @Test
     public void order_findById_test_fail_item_not_found() throws Exception{
         // given
+        String token = getJwtToken("ssarmango@nate.com");
         int findId = 2;
 
         // when
         ResultActions resultActions = mvc.perform(
                 get("/orders/"+findId)
-        );
+                        .header(JWTProvider.HEADER, token));
 
         // eye
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
@@ -220,5 +239,11 @@ public class OrderRestContollerTest extends MyRestDoc {
                 jsonPath("$.error.message").value("주문상품이 존재하지 않습니다."),
                 jsonPath("$.error.status").value(404)
         );
+        resultActions.andDo(print()).andDo(document);
+    }
+
+    private String getJwtToken(String email) {
+        User user = userJPARepository.findByEmail("ssarmango@nate.com").orElseThrow(() -> new UserException.UserNotFoundByEmailException(email));
+        return JWTProvider.create(user);
     }
 }

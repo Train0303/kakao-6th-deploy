@@ -1,6 +1,10 @@
 package com.example.kakao.cart;
 
 import com.example.kakao.MyRestDoc;
+import com.example.kakao._core.errors.exception.user.UserException;
+import com.example.kakao._core.security.JWTProvider;
+import com.example.kakao.user.User;
+import com.example.kakao.user.UserJPARepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +37,9 @@ public class CartRestControllerTest extends MyRestDoc {
     @Autowired
     private ObjectMapper om;
 
+    @Autowired
+    private UserJPARepository userJPARepository;
+
     /**
      * 장바구니 추가
      */
@@ -42,6 +49,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void addCartList_test() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
         List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
         CartRequest.SaveDTO item = new CartRequest.SaveDTO();
         item.setOptionId(3);
@@ -53,6 +61,7 @@ public class CartRestControllerTest extends MyRestDoc {
         // when
         ResultActions resultActions = mvc.perform(
                 post("/carts/add")
+                        .header(JWTProvider.HEADER, token)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
@@ -74,6 +83,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void addCartList_test_fail_duplicated_input() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
         List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
         CartRequest.SaveDTO item1 = new CartRequest.SaveDTO();
         CartRequest.SaveDTO item2 = new CartRequest.SaveDTO();
@@ -87,6 +97,7 @@ public class CartRestControllerTest extends MyRestDoc {
         // when
         ResultActions resultActions = mvc.perform(
                 post("/carts/add")
+                        .header(JWTProvider.HEADER, token)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
@@ -109,6 +120,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void addCartList_test_fail_option_not_found() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
         List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
         CartRequest.SaveDTO item1 = new CartRequest.SaveDTO();
         CartRequest.SaveDTO item2 = new CartRequest.SaveDTO();
@@ -125,6 +137,7 @@ public class CartRestControllerTest extends MyRestDoc {
         // when
         ResultActions resultActions = mvc.perform(
                 post("/carts/add")
+                        .header(JWTProvider.HEADER, token)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
@@ -142,6 +155,74 @@ public class CartRestControllerTest extends MyRestDoc {
         resultActions.andDo(print()).andDo(document);
     }
 
+    @DisplayName("장바구니_추가_테스트_실패_양수가_아닌_옵션ID_입력")
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void addCartList_test_fail_optionId_is_not_positive() throws Exception {
+        // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item1 = new CartRequest.SaveDTO();
+        item1.setOptionId(0); item1.setQuantity(4);
+        requestDTOs.add(item1);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .header(JWTProvider.HEADER, token)
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpectAll(
+                jsonPath("$.success").value("false"),
+                jsonPath("$.response").value(nullValue()),
+                jsonPath("$.error.message").value("0보다 큰 수를 입력해야 합니다.:validList[0].optionId"),
+                jsonPath("$.error.status").value(400)
+        );
+        resultActions.andDo(print()).andDo(document);
+    }
+
+    @DisplayName("장바구니_추가_테스트_실패_양수가_아닌_수량_입력")
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void addCartList_test_fail_quantity_is_not_positive() throws Exception {
+        // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
+        List<CartRequest.SaveDTO> requestDTOs = new ArrayList<>();
+        CartRequest.SaveDTO item1 = new CartRequest.SaveDTO();
+        item1.setOptionId(2); item1.setQuantity(0);
+        requestDTOs.add(item1);
+
+        String requestBody = om.writeValueAsString(requestDTOs);
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/add")
+                        .header(JWTProvider.HEADER, token)
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpectAll(
+                jsonPath("$.success").value("false"),
+                jsonPath("$.response").value(nullValue()),
+                jsonPath("$.error.message").value("0보다 큰 수를 입력해야 합니다.:validList[0].quantity"),
+                jsonPath("$.error.status").value(400)
+        );
+        resultActions.andDo(print()).andDo(document);
+    }
+
     /**
      * 장바구니 전체 조회
      */
@@ -151,10 +232,12 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void findAll_test() throws Exception {
         // given teardown
+        String token = getJwtToken("ssarmango@nate.com");
 
         // when
         ResultActions resultActions = mvc.perform(
                 get("/carts")
+                        .header(JWTProvider.HEADER, token)
         );
 
         // eye
@@ -182,10 +265,12 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void findAll_test_fail_empty_cart() throws Exception {
         // given teardown
+        String token = getJwtToken("rjsdnxogh@naver.com");
 
         // when
         ResultActions resultActions = mvc.perform(
                 get("/carts")
+                        .header(JWTProvider.HEADER, token)
         );
 
         // eye
@@ -211,6 +296,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void update_test() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
         List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
         CartRequest.UpdateDTO item = new CartRequest.UpdateDTO();
         item.setCartId(1);
@@ -222,6 +308,7 @@ public class CartRestControllerTest extends MyRestDoc {
         // when
         ResultActions resultActions = mvc.perform(
                 post("/carts/update")
+                        .header(JWTProvider.HEADER, token)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
@@ -248,6 +335,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void update_test_fail_duplicated_input() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
         List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
         CartRequest.UpdateDTO item1 = new CartRequest.UpdateDTO();
         CartRequest.UpdateDTO item2 = new CartRequest.UpdateDTO();
@@ -260,6 +348,7 @@ public class CartRestControllerTest extends MyRestDoc {
         // when
         ResultActions resultActions = mvc.perform(
                 post("/carts/update")
+                        .header(JWTProvider.HEADER, token)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
@@ -283,6 +372,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void update_test_fail_empty_cart() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("rjsdnxogh@naver.com");
         List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
         CartRequest.UpdateDTO item1 = new CartRequest.UpdateDTO();
         CartRequest.UpdateDTO item2 = new CartRequest.UpdateDTO();
@@ -292,12 +382,10 @@ public class CartRestControllerTest extends MyRestDoc {
         requestDTOs.add(item2);
         String requestBody = om.writeValueAsString(requestDTOs);
 
-        // mocking
-//        given(cartJPARepository.findAllByUserIdFetchOption(anyInt())).willReturn(List.of());
-
         // when
         ResultActions resultActions = mvc.perform(
                 post("/carts/update")
+                        .header(JWTProvider.HEADER, token)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
@@ -321,6 +409,7 @@ public class CartRestControllerTest extends MyRestDoc {
     @Test
     public void update_test_fail_not_found_carts_in_user() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
         List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
         CartRequest.UpdateDTO item1 = new CartRequest.UpdateDTO();
         CartRequest.UpdateDTO item2 = new CartRequest.UpdateDTO();
@@ -329,10 +418,11 @@ public class CartRestControllerTest extends MyRestDoc {
         requestDTOs.add(item1);
         requestDTOs.add(item2);
         String requestBody = om.writeValueAsString(requestDTOs);
-
+        System.out.println(token);
         // when
         ResultActions resultActions = mvc.perform(
                 post("/carts/update")
+                        .header(JWTProvider.HEADER, token)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
@@ -350,5 +440,78 @@ public class CartRestControllerTest extends MyRestDoc {
                 jsonPath("$.error.status").value(400)
         );
         resultActions.andDo(print()).andDo(document);
+    }
+
+    @DisplayName("장바구니_수정_테스트_실패_양수가_아닌_장바구니ID_입력")
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void update_test_fail_cartId_is_not_positive() throws Exception {
+        // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item1 = new CartRequest.UpdateDTO();
+        item1.setCartId(0); item1.setQuantity(10);
+        requestDTOs.add(item1);
+        String requestBody = om.writeValueAsString(requestDTOs);
+        System.out.println(token);
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .header(JWTProvider.HEADER, token)
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // eye
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpectAll(
+                jsonPath("$.success").value("false"),
+                jsonPath("$.response").value(nullValue()),
+                jsonPath("$.error.message").value("0보다 큰 수를 입력해야 합니다.:validList[0].cartId"),
+                jsonPath("$.error.status").value(400)
+        );
+        resultActions.andDo(print()).andDo(document);
+    }
+
+    @DisplayName("장바구니_수정_테스트_실패_양수가_아닌_수량_입력")
+    @WithUserDetails(value = "ssarmango@nate.com")
+    @Test
+    public void update_test_fail_quantity_is_not_positive() throws Exception {
+        // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
+        String token = getJwtToken("ssarmango@nate.com");
+        List<CartRequest.UpdateDTO> requestDTOs = new ArrayList<>();
+        CartRequest.UpdateDTO item1 = new CartRequest.UpdateDTO();
+        item1.setCartId(1); item1.setQuantity(0);
+        requestDTOs.add(item1);
+        String requestBody = om.writeValueAsString(requestDTOs);
+        System.out.println(token);
+        // when
+        ResultActions resultActions = mvc.perform(
+                post("/carts/update")
+                        .header(JWTProvider.HEADER, token)
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+
+        // eye
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : " + responseBody);
+
+        // verify
+        resultActions.andExpectAll(
+                jsonPath("$.success").value("false"),
+                jsonPath("$.response").value(nullValue()),
+                jsonPath("$.error.message").value("0보다 큰 수를 입력해야 합니다.:validList[0].quantity"),
+                jsonPath("$.error.status").value(400)
+        );
+        resultActions.andDo(print()).andDo(document);
+    }
+
+    private String getJwtToken(String email) {
+        User user = userJPARepository.findByEmail("ssarmango@nate.com").orElseThrow(() -> new UserException.UserNotFoundByEmailException(email));
+        return JWTProvider.create(user);
     }
 }
