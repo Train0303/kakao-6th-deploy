@@ -150,7 +150,7 @@ public class OrderServiceTest {
         given(itemJPARepository.findByOrderId(anyInt())).willReturn(itemList);
 
         // when & then
-        orderService.findById(order.getId(), user.getId());
+        orderService.findById(order.getId(), user);
     }
 
     @DisplayName("주문_조회_테스트_실패_주문_없음")
@@ -165,7 +165,7 @@ public class OrderServiceTest {
         given(orderJPARepository.findById(anyInt())).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> orderService.findById(order.getId(), user.getId()))
+        assertThatThrownBy(() -> orderService.findById(order.getId(), user))
                 .isInstanceOf(OrderException.OrderNotFoundException.class);
     }
 
@@ -181,7 +181,7 @@ public class OrderServiceTest {
         given(orderJPARepository.findById(anyInt())).willReturn(Optional.of(order));
 
         // when & then
-        assertThatThrownBy(() -> orderService.findById(order.getId(),anotherUser.getId()))
+        assertThatThrownBy(() -> orderService.findById(order.getId(),anotherUser))
                 .isInstanceOf(OrderException.ForbiddenOrderAccess.class);
     }
 
@@ -197,7 +197,7 @@ public class OrderServiceTest {
         given(itemJPARepository.findByOrderId(anyInt())).willReturn(List.of());
 
         // when & then
-        assertThatThrownBy(() -> orderService.findById(order.getId(),user.getId()))
+        assertThatThrownBy(() -> orderService.findById(order.getId(),user))
                 .isInstanceOf(ItemException.ItemNotFoundException.class);
     }
 
@@ -208,5 +208,4 @@ public class OrderServiceTest {
                 Option.builder().id(2).optionName("테스트 옵션 2").product(product).price(7000).build()
         );
     }
-
 }

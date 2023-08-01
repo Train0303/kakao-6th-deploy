@@ -41,13 +41,15 @@ public class OrderService {
         return new OrderResponse.CreateDTO(order, itemList);
     }
 
-    public OrderResponse.FindByIdDTO findById(int orderId, int userId) {
+    public OrderResponse.FindByIdDTO findById(int orderId, User user) {
+        int userId = user.getId();
+
         // 1. 주문 존재 확인
         Order order = orderJPARepository.findById(orderId).orElseThrow(
                 () -> new OrderException.OrderNotFoundException(orderId));
 
         // 2. 유효한 사용자가 접근했는지 확인
-        validOrderAccess(order.getUser().getId(), userId);
+        validOrderAccess(order.getUser().getId(), user);
 
         // 3. 주문 상품 가져오기
         List<Item> itemList = itemJPARepository.findByOrderId(order.getId());
@@ -104,7 +106,7 @@ public class OrderService {
         }
     }
 
-    private void validOrderAccess(int orderUserId, int userId) {
-        if(orderUserId != userId) throw new OrderException.ForbiddenOrderAccess();
+    private void validOrderAccess(int orderUserId, User user) {
+        if(orderUserId != user.getId() && !user.getRoles().contains("ROLE_ADMIN")) throw new OrderException.ForbiddenOrderAccess();
     }
 }
