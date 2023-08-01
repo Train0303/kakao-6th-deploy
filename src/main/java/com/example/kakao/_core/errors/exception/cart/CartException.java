@@ -22,7 +22,7 @@ public class CartException {
         }
     }
 
-    public static class NotExistsUserCartsException extends Exception404 {
+    public static class NotExistsUserCartsException extends Exception400 {
         public NotExistsUserCartsException() {
             super("유저 장바구니에 없는 cartId가 입력되었습니다.");
         }

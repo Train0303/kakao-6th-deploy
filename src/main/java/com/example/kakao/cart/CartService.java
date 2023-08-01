@@ -196,7 +196,7 @@ public class CartService {
      * Cart가 데이터베이스에 없으면 예외를 발생시킨다.
      *
      */
-    private List<Cart> getValidCartList(List<Integer> requestIds,int userId) {
+    private List<Cart> getValidCartList(List<Integer> requestIds, int userId) {
         List<Cart> cartList = cartJPARepository.findAllByUserIdFetchOption(userId);
         if(cartList.isEmpty()) throw new CartException.CartNotFoundException();
 
