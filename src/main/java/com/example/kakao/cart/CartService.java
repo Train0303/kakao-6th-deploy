@@ -222,17 +222,17 @@ public class CartService {
      */
     private List<Integer> findNotExistIds(List<Integer> requestIds, Set<Integer> databaseIds) {
         Set<Integer> setRequestIds = new HashSet<>(requestIds);
-
         setRequestIds.removeAll(databaseIds);
         return new ArrayList<>(setRequestIds);
     }
 
     /**
      * 회원의 장바구니에 데이터가 없다면 예외를 발생시킨다.
+     * -> 현재 프론트엔드에는 해당 예외를 발생시키면 정상 처리를 하지 못하는 버그가 있다.
      */
     private List<Cart> getValidFindAllCartList(User user) {
         List<Cart> cartList = cartJPARepository.findByUserIdOrderByOptionIdAsc(user.getId());
-        if(cartList.isEmpty()) throw new CartException.CartNotFoundException();
+//        if(cartList.isEmpty()) throw new CartException.CartNotFoundException();
         return cartList;
     }
 }
