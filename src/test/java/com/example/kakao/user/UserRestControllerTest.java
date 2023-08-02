@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.ResultActions;
@@ -18,6 +20,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class UserRestControllerTest extends MyRestDoc {
+    private final String snippets = "{class-name}/{method-name}";
+
     private final ObjectMapper om;
 
     @Autowired
@@ -66,7 +73,16 @@ public class UserRestControllerTest extends MyRestDoc {
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue()));
 
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일 형식을 만족해야 합니다."),
+                        fieldWithPath("password").type(JsonFieldType.STRING).description("영문, 숫자, 특수문자(공백 제외) 8~20자를 만족해야 합니다."),
+                        fieldWithPath("username").type(JsonFieldType.STRING).description("8~45자를 만족해야합니다.")
+                )
+        ));
     }
 
     @DisplayName("유저_회원가입_테스트_실패_이미_존재하는_이메일")
@@ -310,7 +326,15 @@ public class UserRestControllerTest extends MyRestDoc {
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue())
         );
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일 형식을 만족해야 합니다."),
+                        fieldWithPath("password").type(JsonFieldType.STRING).description("영문, 숫자, 특수문자(공백 제외) 8~20자를 만족해야 합니다.")
+                )
+        ));
     }
 
     @DisplayName("유저_로그인_테스트_실패_없는_회원")
@@ -522,7 +546,14 @@ public class UserRestControllerTest extends MyRestDoc {
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue())
         );
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestFields(
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일 형식을 만족해야 합니다.")
+                )
+        ));
     }
 
     @DisplayName("이메일_검사_테스트_실패_이미_존재하는_이메일")

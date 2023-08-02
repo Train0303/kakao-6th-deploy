@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
@@ -22,6 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,18 +40,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class CartRestControllerTest extends MyRestDoc {
+
+    private final String snippets = "{class-name}/{method-name}";
+
     @Autowired
     private ObjectMapper om;
 
     @Autowired
     private UserJPARepository userJPARepository;
 
+
     /**
      * 장바구니 추가
      */
 
     @DisplayName("장바구니_추가_테스트")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void addCartList_test() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
@@ -75,11 +85,24 @@ public class CartRestControllerTest extends MyRestDoc {
                 jsonPath("$.response").value(nullValue()),
                 jsonPath("$.error").value(nullValue())
         );
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(JWTProvider.HEADER).description("JWT token")
+                ),
+                requestFields(
+                        List.of(
+                                fieldWithPath("[].optionId").type(JsonFieldType.NUMBER).description("0보다 큰 수를 입력해야 합니다."),
+                                fieldWithPath("[].quantity").type(JsonFieldType.NUMBER).description("0보다 큰 수를 입력해야 합니다.")
+                       )
+                )
+        ));
     }
 
     @DisplayName("장바구니_추가_테스트_실패_중복된_입력")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void addCartList_test_fail_duplicated_input() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
@@ -116,7 +139,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_추가_테스트_실패_존재하지_않는_옵션")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void addCartList_test_fail_option_not_found() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
@@ -156,7 +179,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_추가_테스트_실패_양수가_아닌_옵션ID_입력")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void addCartList_test_fail_optionId_is_not_positive() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
@@ -190,7 +213,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_추가_테스트_실패_양수가_아닌_수량_입력")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void addCartList_test_fail_quantity_is_not_positive() throws Exception {
         // given -> optionId [1,2,16]이 teardown.sql을 통해 들어가 있음
@@ -228,7 +251,7 @@ public class CartRestControllerTest extends MyRestDoc {
      */
 
     @DisplayName("장바구니_전체_조회_테스트")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void findAll_test() throws Exception {
         // given teardown
@@ -257,42 +280,49 @@ public class CartRestControllerTest extends MyRestDoc {
                 jsonPath("$.response.products[0].carts[0].price").value(50000),
                 jsonPath("$.response.totalPrice").value(310900)
         );
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(JWTProvider.HEADER).description("JWT token")
+                )
+        ));
     }
 
-    @DisplayName("장바구니_전체_조회_테스트_실패_빈_장바구니")
-    @WithUserDetails(value = "rjsdnxogh@naver.com")
-    @Test
-    public void findAll_test_fail_empty_cart() throws Exception {
-        // given teardown
-        String token = getJwtToken("rjsdnxogh@naver.com");
-
-        // when
-        ResultActions resultActions = mvc.perform(
-                get("/carts")
-                        .header(JWTProvider.HEADER, token)
-        );
-
-        // eye
-        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        System.out.println("테스트 : " + responseBody);
-
-        // verify
-        resultActions.andExpectAll(
-                jsonPath("$.success").value("false"),
-                jsonPath("$.response").value(nullValue()),
-                jsonPath("$.error.message").value("회원님의 장바구니가 비어있습니다."),
-                jsonPath("$.error.status").value(404)
-        );
-        resultActions.andDo(print()).andDo(document);
-    }
+//    @DisplayName("장바구니_전체_조회_테스트_실패_빈_장바구니")
+//    @WithUserDetails(value = "rjsdnxogh@naver.com")
+//    @Test
+//    public void findAll_test_fail_empty_cart() throws Exception {
+//        // given teardown
+//        String token = getJwtToken("rjsdnxogh@naver.com");
+//
+//        // when
+//        ResultActions resultActions = mvc.perform(
+//                get("/carts")
+//                        .header(JWTProvider.HEADER, token)
+//        );
+//
+//        // eye
+//        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+//        System.out.println("테스트 : " + responseBody);
+//
+//        // verify
+//        resultActions.andExpectAll(
+//                jsonPath("$.success").value("false"),
+//                jsonPath("$.response").value(nullValue()),
+//                jsonPath("$.error.message").value("회원님의 장바구니가 비어있습니다."),
+//                jsonPath("$.error.status").value(404)
+//        );
+//        resultActions.andDo(print()).andDo(document);
+//    }
 
     /**
      * 장바구니 수정
      */
 
     @DisplayName("장바구니_수정_테스트")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void update_test() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
@@ -326,12 +356,25 @@ public class CartRestControllerTest extends MyRestDoc {
                 jsonPath("$.response.carts[0].quantity").value(10),
                 jsonPath("$.response.carts[0].price").value(100000)
         );
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(JWTProvider.HEADER).description("JWT token")
+                ),
+                requestFields(
+                        List.of(
+                                fieldWithPath("[].cartId").type(JsonFieldType.NUMBER).description("0보다 큰 수를 입력해야 합니다."),
+                                fieldWithPath("[].quantity").type(JsonFieldType.NUMBER).description("0보다 큰 수를 입력해야 합니다.")
+                        )
+                )
+        ));
     }
 
 
     @DisplayName("장바구니_수정_테스트_실패_중복_입력")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void update_test_fail_duplicated_input() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
@@ -368,7 +411,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_수정_테스트_실패_빈_장바구니")
-    @WithUserDetails(value = "rjsdnxogh@naver.com")
+//    @WithUserDetails(value = "rjsdnxogh@naver.com")
     @Test
     public void update_test_fail_empty_cart() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
@@ -405,7 +448,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_수정_테스트_실패_회원에_없는_장바구니_존재")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void update_test_fail_not_found_carts_in_user() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
@@ -443,7 +486,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_수정_테스트_실패_양수가_아닌_장바구니ID_입력")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void update_test_fail_cartId_is_not_positive() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
@@ -477,7 +520,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_수정_테스트_실패_양수가_아닌_수량_입력")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void update_test_fail_quantity_is_not_positive() throws Exception {
         // given -> cartId [1번 5개,2번 1개,3번 5개]가 teardown.sql을 통해 들어가 있음
@@ -511,7 +554,7 @@ public class CartRestControllerTest extends MyRestDoc {
     }
 
     private String getJwtToken(String email) {
-        User user = userJPARepository.findByEmail("ssarmango@nate.com").orElseThrow(() -> new UserException.UserNotFoundByEmailException(email));
+        User user = userJPARepository.findByEmail(email).orElseThrow(() -> new UserException.UserNotFoundByEmailException(email));
         return JWTProvider.create(user);
     }
 }

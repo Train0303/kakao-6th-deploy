@@ -7,13 +7,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import static org.hamcrest.Matchers.nullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -24,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class ProductRestControllerTest extends MyRestDoc {
-
+    private final String snippets = "{class-name}/{method-name}";
     /**
      * 제품 전체 조회 테스트
      */
@@ -53,6 +55,40 @@ public class ProductRestControllerTest extends MyRestDoc {
         resultActions.andDo(print()).andDo(document);
     }
 
+    @DisplayName("제품_전체_조회_테스트_2페이지")
+    @Test
+    public void findAll_test_page_2() throws Exception {
+        // given teardown.sql
+        int page = 1;
+
+        // when
+        ResultActions resultActions = mvc.perform(
+                get("/products")
+                        .queryParam("page", String.valueOf(page))
+        );
+
+        // console
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트 : "+responseBody);
+
+        // verify
+        resultActions.andExpect(jsonPath("$.success").value("true"));
+        resultActions.andExpect(jsonPath("$.response[0].id").value(10));
+        resultActions.andExpect(jsonPath("$.response[0].productName").value("통영 홍 가리비 2kg, 2세트 구매시 1kg 추가증정"));
+        resultActions.andExpect(jsonPath("$.response[0].description").value(""));
+        resultActions.andExpect(jsonPath("$.response[0].image").value("/images/10.jpg"));
+        resultActions.andExpect(jsonPath("$.response[0].price").value(8900));
+        resultActions.andDo(print())
+                .andDo(document(
+                        snippets,
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        requestParameters(
+                            parameterWithName("page").description("page의 디폴트 값은 0이다.")
+                        )
+                ));
+    }
+
     @DisplayName("제품_상세_조회_테스트")
     @Test
     public void findById_test() throws Exception {
@@ -61,7 +97,7 @@ public class ProductRestControllerTest extends MyRestDoc {
 
         // when
         ResultActions resultActions = mvc.perform(
-                get("/products/" + id)
+                get("/products/{product_id}", id)
         );
 
         // console
@@ -75,7 +111,15 @@ public class ProductRestControllerTest extends MyRestDoc {
         resultActions.andExpect(jsonPath("$.response.description").value(""));
         resultActions.andExpect(jsonPath("$.response.image").value("/images/1.jpg"));
         resultActions.andExpect(jsonPath("$.response.price").value(1000));
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print())
+                .andDo(document(
+                        snippets,
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        pathParameters(
+                                parameterWithName("product_id").description("제품ID")
+                        )
+                ));
     }
 
     @DisplayName("제품_상세_조회_테스트_실패_제품_없음")

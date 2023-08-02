@@ -447,6 +447,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#_공통_jwt_인증">공통 (JWT 인증)</a>
+<ul class="sectlevel2">
+<li><a href="#_jwt_인증_테스트">jwt 인증 테스트</a></li>
+</ul>
+</li>
 <li><a href="#_회원">회원</a>
 <ul class="sectlevel2">
 <li><a href="#_이메일_확인">이메일 확인</a></li>
@@ -478,6 +483,85 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect1">
+<h2 id="_공통_jwt_인증">공통 (JWT 인증)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_jwt_인증_테스트">jwt 인증 테스트</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>url : /ping</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JWT token</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect3">
+<h4 id="_정상_요청_예시">정상 요청 예시</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/ping</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNX0.ObYPo-DSUPePjac6T3UufSE_UuxhPeVUeY7G8asV0-OHzAXeqs36LAW40iYOPcIhHZCu7oyR6P_VrISgVcN5LA</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_정상_응답_예시">정상 응답 예시</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code>{
+  "success" : true,
+  "response" : "pong",
+  "error" : null
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_실패_요청_예시_인증되지_않은_토큰">실패 요청 예시 : 인증되지 않은 토큰</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/ping</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_실패_응답_예시_인증되지_않은_토큰">실패 응답 예시 : 인증되지 않은 토큰</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code>{
+  "success" : false,
+  "response" : null,
+  "error" : {
+    "message" : "인증되지 않았습니다",
+    "status" : 401
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_회원">회원</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -487,27 +571,31 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>url : /check</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
-<p>body</p>
-<div class="ulist">
-<ul>
-<li>
-<p>email(string) : 이메일 형식을 만족해야 합니다.</p>
-</li>
 </ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>email</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이메일 형식을 만족해야 합니다.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_2">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/check</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
@@ -522,7 +610,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_2">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -602,33 +690,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>uri : /join</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
-<p>body</p>
-<div class="ulist">
-<ul>
-<li>
-<p>email(string) : 이메일 형식을 만족해야 합니다.</p>
-</li>
-<li>
-<p>password(string) : 영문, 숫자, 특수문자(공백 제외) 8~20자를 만족해야 합니다.</p>
-</li>
-<li>
-<p>username(string) : 8~45자를 만족해야합니다.</p>
-</li>
 </ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>email</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이메일 형식을 만족해야 합니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>password</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">영문, 숫자, 특수문자(공백 제외) 8~20자를 만족해야 합니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>username</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">8~45자를 만족해야합니다.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시_2">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_3">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/join</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
@@ -645,7 +741,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시_2">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_3">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -825,30 +921,36 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>uri: /login</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
-<p>body</p>
-<div class="ulist">
-<ul>
-<li>
-<p>email(string): 이메일 형식을 만족해야 합니다.</p>
-</li>
-<li>
-<p>password(string) : 영문, 숫자, 특수문자(공백 제외) 8~20자를 만족해야 합니다.</p>
-</li>
 </ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>email</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">이메일 형식을 만족해야 합니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>password</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>String</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">영문, 숫자, 특수문자(공백 제외) 8~20자를 만족해야 합니다.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시_3">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_4">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/login</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
@@ -864,7 +966,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시_3">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_4">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1043,23 +1145,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>url : /products</p>
 </li>
-<li>
-<p>param</p>
-<div class="ulist">
-<ul>
-<li>
-<p>page={number}</p>
-</li>
-<li>
-<p>page의 디폴트 값은 0이다.</p>
-</li>
 </ul>
 </div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>page</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">page의 디폴트 값은 0이다.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_요청_예시">요청 예시</h4>
+<h4 id="_정상_요청_예시_5">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/products</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
@@ -1068,7 +1175,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_응답_예시">응답 예시</h4>
+<h4 id="_정상_응답_예시_5">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1132,6 +1239,63 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 }</code></pre>
 </div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_정상_요청_예시_2페이지">정상 요청 예시 (2페이지)</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/products?page=1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_정상_응답_예시_6">정상 응답 예시</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight nowrap"><code>{
+  "success" : true,
+  "response" : [ {
+    "id" : 10,
+    "productName" : "통영 홍 가리비 2kg, 2세트 구매시 1kg 추가증정",
+    "description" : "",
+    "image" : "/images/10.jpg",
+    "price" : 8900
+  }, {
+    "id" : 11,
+    "productName" : "아삭한 궁채 장아찌 1kg 외 인기 반찬 모음전",
+    "description" : "",
+    "image" : "/images/11.jpg",
+    "price" : 6900
+  }, {
+    "id" : 12,
+    "productName" : "깨끗한나라 순수소프트 30롤 2팩. 무형광, 도톰 3겹",
+    "description" : "",
+    "image" : "/images/12.jpg",
+    "price" : 28900
+  }, {
+    "id" : 13,
+    "productName" : "생활공작소 초미세모 칫솔 12입 2개+가글 증정",
+    "description" : "",
+    "image" : "/images/13.jpg",
+    "price" : 9900
+  }, {
+    "id" : 14,
+    "productName" : "경북 영천 샤인머스켓 가정용 1kg 2수 내외",
+    "description" : "",
+    "image" : "/images/14.jpg",
+    "price" : 9900
+  }, {
+    "id" : 15,
+    "productName" : "[LIVE][5%쿠폰] 홈카페 Y3.3 캡슐머신 베이직 세트",
+    "description" : "",
+    "image" : "/images/15.jpg",
+    "price" : 148000
+  } ],
+  "error" : null
+}</code></pre>
+</div>
+</div>
 <hr>
 </div>
 </div>
@@ -1144,8 +1308,27 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. /products/{product_id}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>product_id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">제품ID</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_요청_예시_2">요청 예시</h4>
+<h4 id="_정상_요청_예시_6">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/products/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
@@ -1154,7 +1337,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_응답_예시_2">응답 예시</h4>
+<h4 id="_정상_응답_예시_7">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1230,45 +1413,65 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>uri : /carts/add</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
+</ul>
+</div>
+<div class="paragraph">
 <p>header</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Authorization : Bearer {token}</p>
-</li>
-</ul>
 </div>
-</li>
-<li>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JWT token</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
 <p>body</p>
-<div class="ulist">
-<ul>
-<li>
-<p>optionId(number) : 0보다 큰 수를 입력해야 합니다.</p>
-</li>
-<li>
-<p>quantity(number) : 0보다 큰 수를 입력해야 합니다.</p>
-</li>
-</ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].optionId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0보다 큰 수를 입력해야 합니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].quantity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0보다 큰 수를 입력해야 합니다.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시_4">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_7">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/add</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">42</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1280,7 +1483,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시_4">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_8">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1297,7 +1500,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/add</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">82</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1332,7 +1535,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/add</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">126</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1370,7 +1573,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/add</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">42</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1402,7 +1605,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/add</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">42</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1437,37 +1640,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>url : /carts</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
+</ul>
+</div>
+<div class="paragraph">
 <p>header</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Authorization : Bearer {token}</p>
-</li>
-</ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JWT token</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시_5">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_8">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/carts</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시_5">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_9">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1515,31 +1722,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 }</code></pre>
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_실패_요청_예시_빈_장바구니">실패 요청 예시 : 빈 장바구니</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/carts</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
-<span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_정상_응답_예시_빈_장바구니">정상 응답 예시 : 빈 장바구니</h4>
-<div class="listingblock">
-<div class="content">
-<pre class="rouge highlight nowrap"><code>{
-  "success" : false,
-  "response" : null,
-  "error" : {
-    "message" : "회원님의 장바구니가 비어있습니다.",
-    "status" : 404
-  }
-}</code></pre>
-</div>
-</div>
 <hr>
 </div>
 </div>
@@ -1550,45 +1732,65 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>url : /carts/update</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
+</ul>
+</div>
+<div class="paragraph">
 <p>header</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Authorization : Bearer {token}</p>
-</li>
-</ul>
 </div>
-</li>
-<li>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JWT token</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
 <p>body</p>
-<div class="ulist">
-<ul>
-<li>
-<p>cartId(number) : 0보다 큰 수를 입력해야 합니다.</p>
-</li>
-<li>
-<p>quantity(number) : 0보다 큰 수를 입력해야 합니다.</p>
-</li>
-</ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Path</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].cartId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0보다 큰 수를 입력해야 합니다.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>[].quantity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Number</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0보다 큰 수를 입력해야 합니다.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시_6">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_9">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/update</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">41</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1600,7 +1802,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시_6">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_10">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1638,7 +1840,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/update</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">79</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1668,12 +1870,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_실패_요청_예시_빈_장바구니_2">실패 요청 예시 : 빈 장바구니</h4>
+<h4 id="_실패_요청_예시_빈_장바구니">실패 요청 예시 : 빈 장바구니</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/update</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyanNkbnhvZ2hAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlkIjoyLCJleHAiOjE2OTExMzI5MzR9.9DeNkOEI3Q4zCosxV9nbZeoTwLHxLQw4JQ_fj5IjF5IfTVNLANH9zDAOlIqvr2MU5SQ0Y0EwB-gAxHW_xp0aPA</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">79</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1708,7 +1910,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/update</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">79</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1743,7 +1945,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/update</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">41</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1775,7 +1977,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/carts/update</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Content-Type</span><span class="p">:</span> <span class="s">application/json;charset=UTF-8</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5NX0.KfXMvVsYMSC0nt5-HOzqkdJvD0qSoGdsB4h1MRXmwSQP9dvP477vzmvnCMLJOubyuoXg0g9XaQKpZdUs5qmFhg</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNH0.Cy2skRiofl7PBXBY5cHii085rSz9y5BDmOLsnYNlKr9rvVuorPvI2b4hTB4dkMB3tT_Z14OgeqfI0-NUt3Xckw</span>
 <span class="na">Content-Length</span><span class="p">:</span> <span class="s">40</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span>
 
@@ -1814,37 +2016,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>url : /orders/save</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
+</ul>
+</div>
+<div class="paragraph">
 <p>header</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Authorization : Bearer {token}</p>
-</li>
-</ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JWT token</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시_7">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_10">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/orders/save</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5Nn0.7CWJxEYwADeY7jYwTYRkHoWV1RAajgi2jPQM2Ugi6bQNGxrZoD5NfjdRJ9Lt591cAxJrZl60uY7a5r_bhRwcvw</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNX0.ObYPo-DSUPePjac6T3UufSE_UuxhPeVUeY7G8asV0-OHzAXeqs36LAW40iYOPcIhHZCu7oyR6P_VrISgVcN5LA</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시_7">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_11">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1881,11 +2087,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect3">
-<h4 id="_실패_요청_예시_빈_장바구니_3">실패 요청 예시 : 빈 장바구니</h4>
+<h4 id="_실패_요청_예시_빈_장바구니_2">실패 요청 예시 : 빈 장바구니</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">POST</span> <span class="nn">/orders/save</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5Nn0.7CWJxEYwADeY7jYwTYRkHoWV1RAajgi2jPQM2Ugi6bQNGxrZoD5NfjdRJ9Lt591cAxJrZl60uY7a5r_bhRwcvw</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyanNkbnhvZ2hAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlkIjoyLCJleHAiOjE2OTExMzI5MzR9.9DeNkOEI3Q4zCosxV9nbZeoTwLHxLQw4JQ_fj5IjF5IfTVNLANH9zDAOlIqvr2MU5SQ0Y0EwB-gAxHW_xp0aPA</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
 </div>
 </div>
@@ -1914,37 +2120,60 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li>
 <p>url : /orders/{order_id}</p>
 </li>
-<li>
-<p>request</p>
-<div class="ulist">
-<ul>
-<li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. /orders/{order_id}</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>order_id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">주문ID</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
 <p>header</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Authorization : Bearer {token}</p>
-</li>
-</ul>
 </div>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Authorization</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JWT token</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect3">
-<h4 id="_정상_요청_예시_8">정상 요청 예시</h4>
+<h4 id="_정상_요청_예시_11">정상 요청 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/orders/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5Nn0.7CWJxEYwADeY7jYwTYRkHoWV1RAajgi2jPQM2Ugi6bQNGxrZoD5NfjdRJ9Lt591cAxJrZl60uY7a5r_bhRwcvw</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNX0.ObYPo-DSUPePjac6T3UufSE_UuxhPeVUeY7G8asV0-OHzAXeqs36LAW40iYOPcIhHZCu7oyR6P_VrISgVcN5LA</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_정상_응답_예시_8">정상 응답 예시</h4>
+<h4 id="_정상_응답_예시_12">정상 응답 예시</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code>{
@@ -1985,7 +2214,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/orders/3</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5Nn0.7CWJxEYwADeY7jYwTYRkHoWV1RAajgi2jPQM2Ugi6bQNGxrZoD5NfjdRJ9Lt591cAxJrZl60uY7a5r_bhRwcvw</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNX0.ObYPo-DSUPePjac6T3UufSE_UuxhPeVUeY7G8asV0-OHzAXeqs36LAW40iYOPcIhHZCu7oyR6P_VrISgVcN5LA</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
 </div>
 </div>
@@ -2010,7 +2239,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/orders/2</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5Nn0.7CWJxEYwADeY7jYwTYRkHoWV1RAajgi2jPQM2Ugi6bQNGxrZoD5NfjdRJ9Lt591cAxJrZl60uY7a5r_bhRwcvw</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTEzMjkzNX0.ObYPo-DSUPePjac6T3UufSE_UuxhPeVUeY7G8asV0-OHzAXeqs36LAW40iYOPcIhHZCu7oyR6P_VrISgVcN5LA</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
 </div>
 </div>
@@ -2035,7 +2264,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="listingblock">
 <div class="content">
 <pre class="rouge highlight nowrap"><code data-lang="http"><span class="nf">GET</span> <span class="nn">/orders/1</span> <span class="k">HTTP</span><span class="o">/</span><span class="m">1.1</span>
-<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzc2FybWFuZ29AbmF0ZS5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImV4cCI6MTY5MTA3ODM5Nn0.7CWJxEYwADeY7jYwTYRkHoWV1RAajgi2jPQM2Ugi6bQNGxrZoD5NfjdRJ9Lt591cAxJrZl60uY7a5r_bhRwcvw</span>
+<span class="na">Authorization</span><span class="p">:</span> <span class="s">Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyanNkbnhvZ2hAbmF2ZXIuY29tIiwicm9sZSI6IlJPTEVfVVNFUiIsImlkIjoyLCJleHAiOjE2OTExMzI5MzV9.JF8xqyfJzB4lbQO0tjD_goKg14EftIfFC0c1Z3LaGX3P-WWtA5xg4VjyVTl6LAn3pU75rbYm5DTtzc7RimenZw</span>
 <span class="na">Host</span><span class="p">:</span> <span class="s">localhost:8080</span></code></pre>
 </div>
 </div>
@@ -2062,7 +2291,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2023-08-02 00:59:49 +0900
+Last updated 2023-08-02 16:06:48 +0900
 </div>
 </div>
 <style>

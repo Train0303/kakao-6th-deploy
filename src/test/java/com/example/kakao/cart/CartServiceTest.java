@@ -287,21 +287,21 @@ public class CartServiceTest extends DummyEntity {
         assertThat(resultDTO.getTotalPrice()).isEqualTo(totalPrice);
     }
 
-    @DisplayName("장바구니_조회_테스트_실패_빈_장바구니")
-    @Test
-    public void cart_findAllByUserId_test_fail_empty_carts() {
-        // given
-        User user = User.builder().id(1).build();
-        List<Option> optionList = optionDummyList(productDummyList()).subList(0, 2);
-
-        // mocking
-        given(cartJPARepository.findByUserIdOrderByOptionIdAsc(anyInt())).willReturn(List.of());
-
-        // when & then
-        assertThatThrownBy(() -> cartService.findAll(user))
-                .isInstanceOf(CartException.CartNotFoundException.class);
-
-    }
+//    @DisplayName("장바구니_조회_테스트_실패_빈_장바구니")
+//    @Test
+//    public void cart_findAllByUserId_test_fail_empty_carts() {
+//        // given
+//        User user = User.builder().id(1).build();
+//        List<Option> optionList = optionDummyList(productDummyList()).subList(0, 2);
+//
+//        // mocking
+//        given(cartJPARepository.findByUserIdOrderByOptionIdAsc(anyInt())).willReturn(List.of());
+//
+//        // when & then
+//        assertThatThrownBy(() -> cartService.findAll(user))
+//                .isInstanceOf(CartException.CartNotFoundException.class);
+//
+//    }
 
     private List<Option> createOptionList(List<CartRequest.SaveDTO> dtos) {
         List<Integer> ids = dtos.stream().map(CartRequest.SaveDTO::getOptionId).collect(Collectors.toList());

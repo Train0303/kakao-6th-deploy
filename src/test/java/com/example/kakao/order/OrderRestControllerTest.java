@@ -12,14 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.nullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -30,6 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs(uriScheme = "http", uriHost = "localhost", uriPort = 8080)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 public class OrderRestControllerTest extends MyRestDoc {
+
+    private final String snippets = "{class-name}/{method-name}";
 
     private final ObjectMapper om;
 
@@ -52,7 +60,7 @@ public class OrderRestControllerTest extends MyRestDoc {
      */
 
     @DisplayName("주문_저장_테스트")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void order_save_test() throws Exception {
         // given
@@ -88,11 +96,18 @@ public class OrderRestControllerTest extends MyRestDoc {
                 jsonPath("$.response.totalPrice").value(310900),
                 jsonPath("$.error").value(nullValue())
         );
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(JWTProvider.HEADER).description("JWT token")
+                )
+        ));
     }
 
     @DisplayName("주문_저장_테스트_실패_빈_장바구니")
-    @WithUserDetails(value = "rjsdnxogh@naver.com")
+//    @WithUserDetails(value = "rjsdnxogh@naver.com")
     @Test
     public void order_save_test_fail_empty_cart() throws Exception {
         // given
@@ -122,7 +137,7 @@ public class OrderRestControllerTest extends MyRestDoc {
      */
 
     @DisplayName("장바구니_조회_테스트")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void order_findById_test() throws Exception{
         // given
@@ -131,7 +146,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // when
         ResultActions resultActions = mvc.perform(
-                get("/orders/"+findId)
+                get("/orders/{order_id}", findId)
                         .header(JWTProvider.HEADER, token));
 
         // eye
@@ -159,11 +174,21 @@ public class OrderRestControllerTest extends MyRestDoc {
                 jsonPath("$.response.totalPrice").value(310900),
                 jsonPath("$.error").value(nullValue())
         );
-        resultActions.andDo(print()).andDo(document);
+        resultActions.andDo(print()).andDo(document(
+                snippets,
+                getDocumentRequest(),
+                getDocumentResponse(),
+                requestHeaders(
+                        headerWithName(JWTProvider.HEADER).description("JWT token")
+                ),
+                pathParameters(
+                        parameterWithName("order_id").description("주문ID")
+                )
+        ));
     }
 
     @DisplayName("장바구니_조회_테스트_실패_없는_주문")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void order_findById_test_fail_order_not_found() throws Exception{
         // given
@@ -172,7 +197,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // when
         ResultActions resultActions = mvc.perform(
-                get("/orders/"+findId)
+                get("/orders/{order_id}", findId)
                         .header(JWTProvider.HEADER, token));
 
         // eye
@@ -190,7 +215,7 @@ public class OrderRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_조회_테스트_권한없는_유저의_주문_접근")
-    @WithUserDetails(value = "rjsdnxogh@naver.com")
+//    @WithUserDetails(value = "rjsdnxogh@naver.com")
     @Test
     public void order_findById_test_fail_forbidden_user_access() throws Exception{
         // given
@@ -199,7 +224,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // when
         ResultActions resultActions = mvc.perform(
-                get("/orders/"+findId)
+                get("/orders/{order_id}", findId)
                         .header(JWTProvider.HEADER, token));
 
         // eye
@@ -216,7 +241,7 @@ public class OrderRestControllerTest extends MyRestDoc {
     }
 
     @DisplayName("장바구니_조회_테스트_실패_없는_상품")
-    @WithUserDetails(value = "ssarmango@nate.com")
+//    @WithUserDetails(value = "ssarmango@nate.com")
     @Test
     public void order_findById_test_fail_item_not_found() throws Exception{
         // given
@@ -225,7 +250,7 @@ public class OrderRestControllerTest extends MyRestDoc {
 
         // when
         ResultActions resultActions = mvc.perform(
-                get("/orders/"+findId)
+                get("/orders/{order_id}", findId)
                         .header(JWTProvider.HEADER, token));
 
         // eye
@@ -243,7 +268,7 @@ public class OrderRestControllerTest extends MyRestDoc {
     }
 
     private String getJwtToken(String email) {
-        User user = userJPARepository.findByEmail("ssarmango@nate.com").orElseThrow(() -> new UserException.UserNotFoundByEmailException(email));
+        User user = userJPARepository.findByEmail(email).orElseThrow(() -> new UserException.UserNotFoundByEmailException(email));
         return JWTProvider.create(user);
     }
 }
