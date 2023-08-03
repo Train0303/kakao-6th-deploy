@@ -21,6 +21,7 @@ endif::[]
 === jwt 인증 테스트
 * url : /ping
 
+header
 include::{snippets}/{ping}/ping_pong_test/request-headers.adoc[]
 
 ==== 정상 요청 예시
@@ -40,6 +41,7 @@ include::{snippets}/{ping}/ping_pong_test_fail_token_invalid/response-body.adoc[
 === 이메일 확인
 * url : /check
 
+body
 include::{snippets}/{user}/same_email_check_test/request-fields.adoc[]
 
 ==== 정상 요청 예시
@@ -64,8 +66,9 @@ include::{snippets}/{user}/same_email_test_fail_not_satisfied_password_expressio
 '''
 
 === 회원가입
-* uri : /join
+* url : /join
 
+body
 include::{snippets}/{user}/user_join_test/request-fields.adoc[]
 
 ==== 정상 요청 예시
@@ -107,8 +110,9 @@ include::{snippets}/{user}/user_join_test_not_satisfied_password_expression/resp
 '''
 
 === 로그인
-* uri: /login
+* url: /login
 
+body
 include::{snippets}/{user}/user_login_test/request-fields.adoc[]
 
 ==== 정상 요청 예시
@@ -188,7 +192,7 @@ include::{snippets}/{product}/find-by-id_test_fail_no_product_data/response-body
 == 장바구니
 
 === 장바구니 추가
-* uri : /carts/add
+* url : /carts/add
 
 header
 include::{snippets}/{cart}/add-cart-list_test/request-headers.adoc[]
