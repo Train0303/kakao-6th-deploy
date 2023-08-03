@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("test")
 @DisplayName("장바구니_서비스_테스트")
@@ -59,6 +59,7 @@ public class CartServiceTest extends DummyEntity {
         cartService.addCartList(saveDTOList, user);
 
         // then
+        verify(cartJPARepository).saveAllAndFlush(anyList());
     }
 
     @DisplayName("장바구니_추가_테스트_수정_존재")
@@ -83,6 +84,7 @@ public class CartServiceTest extends DummyEntity {
         cartService.addCartList(saveDTOList, user);
 
         // then
+        verify(cartJPARepository).saveAllAndFlush(anyList());
     }
 
     @DisplayName("장바구니_추가_테스트_실패_중복입력")

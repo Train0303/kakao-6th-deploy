@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ActiveProfiles("test")
 @DisplayName("유저_서비스_테스트")
@@ -50,8 +51,11 @@ public class UserServiceTest {
                 .willReturn(testPasswordEncoder.encode(joinDTO.getPassword()));
         given(userJPARepository.save(any())).willReturn(user);
 
-        // when & then
+        // when
         userService.join(joinDTO);
+
+        // then
+        verify(userJPARepository).save(any());
 
     }
 
@@ -71,6 +75,23 @@ public class UserServiceTest {
         // when & then
         assertThatThrownBy(() -> userService.join(joinDTO)).isInstanceOf(UserException.UserSaveException.class);
 
+    }
+
+    @DisplayName("유저_생성_실패_이미_존재하는_이메일")
+    @Test
+    public void user_join_test_fail_email_already_exist() {
+        // given
+        UserRequest.JoinDTO joinDTO = createUserJoinRequest();
+        User user = joinDTO.toEntity();
+        int fakeId = 2;
+        ReflectionTestUtils.setField(user, "id", fakeId);
+        ReflectionTestUtils.setField(user, "password", testPasswordEncoder.encode(user.getPassword()));
+
+        // mocking
+        given(userJPARepository.findByEmail(joinDTO.getEmail())).willReturn(Optional.of(user));
+
+        // when & then
+        assertThatThrownBy(() -> userService.join(joinDTO)).isInstanceOf(UserException.SameEmailExistException.class);
     }
 
     @DisplayName("유저_로그인_테스트_성공")
